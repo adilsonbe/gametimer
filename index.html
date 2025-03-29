@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Game Timer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+        body {
+            font-family: 'VT323', monospace;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #8BAC0F;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAABgElEQVR4nO3ZzUoDMRSG4ROpgtKFPyiCo1gRQb2GC0W9AXUX3kOr4h241V24cqFbEQR1Jd6FCCIIUkEQjS5EOjAVEcfM5JymcB5I2mXzJoFJDsY4juM4juM4lQNGgT3gFrgHzoGl0F05YBo4Ax6BL2CxpJ8G7oDX719uvRRp5i0gJ5E/3R1wArwAz8Ah0HfDzEbqCoEXYL8t1ABugPeItAFXDeAoUnsJrAODSa5+uq22o9h8AKeR+hmgN52uEKKRvNYUcBOpXwF608kJxRrJ6zfLFoI10o0+RZmNiDwGD61oRCRr5H9EpMFG0uBNdKNP0a9S9d+I10jW6OGPHuxJWDwQa+RgF1nsjohIg1/I3ehTZDJS9fdIUiLi9UgeWTAkJSIN3iN5RMTrEUuwkaKxGhGvR7LGaqTr9YjVWI10vR6xGqsRkQbvkezXI1ZjNSJej1iN1UiRWI2I1yNWYzUiXo9YjdWIeD1iNVYjRWI1IuL1iNVYjUiD9UiRdFjjOI7jOI5jTP/4BrUWvGk6WMl9AAAAAElFTkSuQmCC');
+            transition: background-color 0.5s;
+            overflow: hidden;
+        }
+        
+        .container {
+            max-width: 600px;
+            width: 90%;
+            padding: 20px;
+            background-color: #604730;
+            border: 5px solid #3B2C1C;
+            box-shadow: inset 0 0 0 5px #7B5B3B, 0 8px 0 #3B2C1C;
+            border-radius: 0;
+            position: relative;
+            image-rendering: pixelated;
+        }
+        
+        h1 {
+            color: #FFFF55;
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 0 #3B2C1C;
+            font-size: 2.5em;
+            letter-spacing: 1px;
+        }
+        
+        .setup {
+            margin-bottom: 30px;
+        }
+        
+        .setup label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 0 #3B2C1C;
+            font-size: 1.3em;
+        }
+        
+        .setup input {
+            width: 80%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 3px solid #3B2C1C;
+            background-color: #C6C6C6;
+            border-radius: 0;
+            font-family: 'VT323', monospace;
+            font-size: 1.5em;
+            image-rendering: pixelated;
+        }
+        
+        .setup button {
+            background-color: #7FBB42;
+            color: white;
+            border: 3px solid #3B2C1C;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-family: 'VT323', monospace;
+            font-size: 1.5em;
+            text-shadow: 2px 2px 0 #3B2C1C;
+            transition: background-color 0.3s;
+            image-rendering: pixelated;
+            box-shadow: inset 0 -6px 0 #5D872F, 0 4px 0 #3B2C1C;
+            border-radius: 0;
+        }
+        
+        .setup button:hover {
+            background-color: #95D252;
+            transform: translateY(-2px);
+        }
+        
+        .setup button:active {
+            transform: translateY(2px);
+            box-shadow: inset 0 -2px 0 #5D872F, 0 2px 0 #3B2C1C;
+        }
+        
+        .timer-display {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        .time {
+            font-size: 120px;
+            font-weight: bold;
+            margin: 30px 0 20px 0;
+            color: white;
+            text-shadow: 3px 3px 0 #3B2C1C;
+        }
+
+        .progress-container {
+            width: 90%;
+            height: 25px;
+            background-color: #3B2C1C;
+            border: 3px solid #3B2C1C;
+            margin: 0 auto 30px auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #7FBB42;
+            width: 100%;
+            transition: width 1s linear;
+        }
+        
+        .progress-container::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: linear-gradient(to right, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.1) 50%, transparent 50%, transparent 100%);
+            background-size: 10px 100%;
+            pointer-events: none;
+        }
+        
+        .reset-btn {
+            background-color: #4AA0D0;
+            color: white;
+            border: 3px solid #3B2C1C;
+            padding: 20px 40px;
+            cursor: pointer;
+            font-family: 'VT323', monospace;
+            font-size: 1.8em;
+            text-shadow: 2px 2px 0 #3B2C1C;
+            margin-top: 20px;
+            transition: transform 0.2s, background-color 0.3s;
+            width: 80%;
+            max-width: 300px;
+            box-shadow: inset 0 -6px 0 #2E769D, 0 4px 0 #3B2C1C;
+            border-radius: 0;
+            image-rendering: pixelated;
+        }
+        
+        .reset-btn:hover {
+            background-color: #5BBAEC;
+            transform: translateY(-2px);
+        }
+        
+        .reset-btn:active {
+            transform: translateY(2px);
+            box-shadow: inset 0 -2px 0 #2E769D, 0 2px 0 #3B2C1C;
+        }
+        
+        .game-over {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 0, 0, 0.6);
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAABgElEQVR4nO3ZzUoDMRSG4ROpgtKFPyiCo1gRQb2GC0W9AXUX3kOr4h241V24cqFbEQR1Jd6FCCIIUkEQjS5EOjAVEcfM5JymcB5I2mXzJoFJDsY4juM4juM4lQNGgT3gFrgHzoGl0F05YBo4Ax6BL2CxpJ8G7oDX719uvRRp5i0gJ5E/3R1wArwAz8Ah0HfDzEbqCoEXYL8t1ABugPeItAFXDeAoUnsJrAODSa5+uq22o9h8AKeR+hmgN52uEKKRvNYUcBOpXwF608kJxRrJ6zfLFoI10o0+RZmNiDwGD61oRCRr5H9EpMFG0uBNdKNP0a9S9d+I10jW6OGPHuxJWDwQa+RgF1nsjohIg1/I3ehTZDJS9fdIUiLi9UgeWTAkJSIN3iN5RMTrEUuwkaKxGhGvR7LGaqTr9YjVWI10vR6xGqsRkQbvkezXI1ZjNSJej1iN1UiRWI2I1yNWYzUiXo9YjdWIeD1iNVYjRWI1IuL1iNVYjUiD9UiRdFjjOI7jOI5jTP/4BrUWvGk6WMl9AAAAAElFTkSuQmCC');
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            animation: flash 1s infinite;
+            image-rendering: pixelated;
+        }
+        
+        .game-over h2 {
+            color: white;
+            font-size: 60px;
+            text-shadow: 3px 3px 0 #3B2C1C;
+            margin-bottom: 40px;
+            font-family: 'VT323', monospace;
+            letter-spacing: 1px;
+        }
+        
+        .restart-btn {
+            background-color: #E0661F;
+            color: white;
+            border: 3px solid #3B2C1C;
+            padding: 15px 30px;
+            border-radius: 0;
+            cursor: pointer;
+            font-family: 'VT323', monospace;
+            font-size: 1.5em;
+            font-weight: bold;
+            text-shadow: 2px 2px 0 #3B2C1C;
+            transition: transform 0.2s;
+            box-shadow: inset 0 -6px 0 #B04A10, 0 4px 0 #3B2C1C;
+            image-rendering: pixelated;
+        }
+        
+        .restart-btn:hover {
+            background-color: #F77B3D;
+            transform: translateY(-2px);
+        }
+        
+        .restart-btn:active {
+            transform: translateY(2px);
+            box-shadow: inset 0 -2px 0 #B04A10, 0 2px 0 #3B2C1C;
+        }
+        
+        @keyframes flash {
+            0% { background-color: rgba(255, 0, 0, 0.8); }
+            50% { background-color: rgba(255, 0, 0, 0.4); }
+            100% { background-color: rgba(255, 0, 0, 0.8); }
+        }
+        
+        /* Pixelate borders */
+        .container::before {
+            content: "";
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border: 2px solid #3B2C1C;
+            pointer-events: none;
+            image-rendering: pixelated;
+        }
+        
+        /* Minecraft dirt texture background for container */
+        .container::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAABNElEQVR4nO2XS07DMBBAZ0KBsEAckFUPASdouQkrVhyBFUfgBFyATbkALOAArLsAJH5lQYsEC5CIjFQrrdPYruOkMU/yym8yb8Z2xrEoGUb+XAIboAO2AHlQCTSAQ2AMjIAxPwY2/4wV0ALeOfEjMAJOgWo2pX8pAi3gA5gCPaAsUvIM3AEdxvb5f2HUErjmqX0G7vhZBtoGvQw4YewYqPNvTcZGfJ8AD4z7As6BGvO5AK6YYALc8rgV0CrgdQsM2dDHwLVH/IkNT7nnVkugiZJgqA+AZy5Yn/YNMN8DDpirzZzPGfMGmKrGGEieT/X9c2nzVMa8BYlZw3Zgb93ZVoCZUB8CZy/Yww7/0wWYAUPFQ1R4T4HzM8ATkKR2Kw+p+dCDQVsH09yFPwSXUpI5X39Pk9LFFLQkAAAAAElFTkSuQmCC');
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: -1;
+            image-rendering: pixelated;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GAME TIMER</h1>
+        
+        <div class="setup" id="setupScreen">
+            <label for="timeInput">RESPONSE TIME (SECONDS):</label>
+            <input type="number" id="timeInput" min="1" max="300" value="30">
+            <button id="startButton">START GAME</button>
+        </div>
+        
+        <div class="timer-display" id="timerScreen">
+            <div class="time" id="timeDisplay">30</div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <button class="reset-btn" id="resetButton">CORRECT ANSWER!</button>
+            <button class="reset-btn" id="endGameButton" style="background-color: #E0661F; box-shadow: inset 0 -6px 0 #B04A10, 0 4px 0 #3B2C1C; margin-top: 15px;">END GAME</button>
+        </div>
+    </div>
+    
+    <div class="game-over" id="gameOverScreen">
+        <h2>PLAYER ELIMINATED!</h2>
+        <div style="display: flex; flex-direction: column; gap: 15px; width: 90%; max-width: 300px;">
+            <button class="restart-btn" id="nextPlayerButton" style="background-color: #7FBB42; color: white; box-shadow: inset 0 -6px 0 #5D872F, 0 4px 0 #3B2C1C;">NEXT PLAYER</button>
+            <button class="restart-btn" id="restartButton" style="background-color: #E0661F; box-shadow: inset 0 -6px 0 #B04A10, 0 4px 0 #3B2C1C;">END GAME</button>
+        </div>
+    </div>
+    
+    <script>
+        // Elementos DOM
+        const setupScreen = document.getElementById('setupScreen');
+        const timerScreen = document.getElementById('timerScreen');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const timeInput = document.getElementById('timeInput');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const startButton = document.getElementById('startButton');
+        const resetButton = document.getElementById('resetButton');
+        const restartButton = document.getElementById('restartButton');
+        
+        // Variáveis do timer
+        let timeLeft = 0;
+        let timerInterval = null;
+        let alarmSound = null;
+        let totalTime = 0;
+        
+        // Criar o efeito sonoro de alarme
+        function createAlarmSound() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Sons de minecraft
+            return {
+                start: function() {
+                    // Som de explosão/TNT
+                    const osc = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    osc.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    // Configurações para som tipo Minecraft
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(150, audioContext.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(40, audioContext.currentTime + 0.5);
+                    
+                    gainNode.gain.setValueAtTime(1, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.5);
+                    
+                    osc.start();
+                    osc.stop(audioContext.currentTime + 1.5);
+                    
+                    // Adiciona ruído branco para som mais explosivo
+                    const noise = audioContext.createBufferSource();
+                    const bufferSize = audioContext.sampleRate;
+                    const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+                    const data = buffer.getChannelData(0);
+                    
+                    for (let i = 0; i < bufferSize; i++) {
+                        data[i] = Math.random() * 2 - 1;
+                    }
+                    
+                    noise.buffer = buffer;
+                    
+                    const noiseGain = audioContext.createGain();
+                    noiseGain.gain.setValueAtTime(1, audioContext.currentTime);
+                    noiseGain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                    
+                    noise.connect(noiseGain);
+                    noiseGain.connect(audioContext.destination);
+                    
+                    noise.start();
+                    noise.stop(audioContext.currentTime + 0.5);
+                },
+                stop: function() {
+                    // Nada a fazer aqui, os sons se auto-encerram
+                },
+                beep: function() {
+                    // Sem bips
+                }
+            };
+        }
+        
+        // Função para tocar um bip
+        function playBeep() {
+            if (alarmSound) {
+                alarmSound.beep();
+            }
+        }
+        
+        // Iniciar o timer
+        function startTimer() {
+            timeLeft = parseInt(timeInput.value);
+            
+            if (isNaN(timeLeft) || timeLeft <= 0) {
+                alert('Please enter a valid number of seconds.');
+                return;
+            }
+            
+            // Atualizar a exibição do timer
+            timeDisplay.textContent = timeLeft;
+            
+            // Definir o valor total para a barra de progresso
+            totalTime = timeLeft;
+            document.getElementById('progressBar').style.width = '100%';
+            
+            // Esconder a tela de configuração e mostrar o timer
+            setupScreen.style.display = 'none';
+            timerScreen.style.display = 'block';
+            
+            // Criar o efeito sonoro se ainda não existir
+            if (!alarmSound) {
+                alarmSound = createAlarmSound();
+                // Inicialmente mudo
+                alarmSound.stop();
+            }
+            
+            // Limpar qualquer intervalo existente
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            
+            // Iniciar a contagem regressiva
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timeDisplay.textContent = timeLeft;
+                
+                // Atualizar a barra de progresso
+                const progressPercent = (timeLeft / totalTime) * 100;
+                document.getElementById('progressBar').style.width = progressPercent + '%';
+                
+                // Mudar a cor da barra conforme o tempo diminui
+                if (timeLeft <= (totalTime * 0.3)) { // Últimos 30% do tempo
+                    document.getElementById('progressBar').style.backgroundColor = '#E0661F';
+                } else if (timeLeft <= (totalTime * 0.6)) { // 30-60% do tempo
+                    document.getElementById('progressBar').style.backgroundColor = '#FFD700';
+                } else {
+                    document.getElementById('progressBar').style.backgroundColor = '#7FBB42';
+                }
+                
+                // Mudar a cor conforme o tempo diminui
+                if (timeLeft <= 10) {
+                    timeDisplay.style.color = 'red';
+                    
+                    // Piscar a tela nos últimos 10 segundos
+                    document.body.style.backgroundColor = timeLeft % 2 === 0 ? '#ffdddd' : '#8BAC0F';
+                    
+                    // Aumentar a intensidade visual conforme o tempo diminui
+                    timeDisplay.style.fontSize = `${120 + (10 - timeLeft) * 3}px`;
+                } else {
+                    timeDisplay.style.color = 'white';
+                    timeDisplay.style.fontSize = '120px';
+                    document.body.style.backgroundColor = '#8BAC0F';
+                }
+                
+                // Verificar se o tempo acabou
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    gameOver();
+                }
+            }, 1000);
+        }
+        
+        // Função quando o jogador é eliminado
+        function gameOver() {
+            // Parar o timer
+            clearInterval(timerInterval);
+            
+            // Mostrar a tela de game over
+            gameOverScreen.style.display = 'flex';
+            
+            // Tocar o alarme
+            alarmSound.start();
+        }
+        
+        // Passar para o próximo jogador após eliminação
+        function nextPlayer() {
+            // Esconder a tela de game over
+            gameOverScreen.style.display = 'none';
+            
+            // Parar o alarme
+            if (alarmSound) {
+                alarmSound.stop();
+            }
+            
+            // Resetar a cor, tamanho do timer e cor de fundo
+            timeDisplay.style.color = 'white';
+            timeDisplay.style.fontSize = '120px';
+            document.body.style.backgroundColor = '#8BAC0F';
+            
+            // Reiniciar com o mesmo tempo configurado inicialmente
+            timeLeft = parseInt(timeInput.value);
+            totalTime = timeLeft;
+            timeDisplay.textContent = timeLeft;
+            
+            // Resetar a barra de progresso
+            document.getElementById('progressBar').style.width = '100%';
+            document.getElementById('progressBar').style.backgroundColor = '#7FBB42';
+            
+            // Iniciar o timer novamente
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            
+            // Iniciar a contagem regressiva
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timeDisplay.textContent = timeLeft;
+                
+                // Mudar a cor conforme o tempo diminui
+                if (timeLeft <= 10) {
+                    timeDisplay.style.color = 'red';
+                    
+                    // Piscar a tela nos últimos 10 segundos
+                    document.body.style.backgroundColor = timeLeft % 2 === 0 ? '#ffdddd' : '#8BAC0F';
+                    
+                    // Aumentar a intensidade visual conforme o tempo diminui
+                    timeDisplay.style.fontSize = `${120 + (10 - timeLeft) * 3}px`;
+                } else {
+                    timeDisplay.style.color = 'white';
+                    timeDisplay.style.fontSize = '120px';
+                    document.body.style.backgroundColor = '#8BAC0F';
+                }
+                
+                // Verificar se o tempo acabou
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    gameOver();
+                }
+            }, 1000);
+        }
+        
+        // Reiniciar o timer (quando o jogador acerta)
+        function resetTimer() {
+            // Parar o timer atual
+            clearInterval(timerInterval);
+            
+            // Reiniciar com o mesmo tempo
+            startTimer();
+        }
+        
+        // Reiniciar o jogo completamente
+        function restartGame() {
+            // Esconder a tela de game over
+            gameOverScreen.style.display = 'none';
+            
+            // Mostrar a tela de configuração novamente
+            timerScreen.style.display = 'none';
+            setupScreen.style.display = 'block';
+            
+            // Parar o alarme
+            if (alarmSound) {
+                alarmSound.stop();
+            }
+            
+            // Resetar a cor e tamanho do timer
+            timeDisplay.style.color = 'white';
+            timeDisplay.style.fontSize = '120px';
+        }
+        
+        // Event listeners
+        startButton.addEventListener('click', startTimer);
+        resetButton.addEventListener('click', resetTimer);
+        restartButton.addEventListener('click', restartGame);
+        document.getElementById('endGameButton').addEventListener('click', restartGame);
+        document.getElementById('nextPlayerButton').addEventListener('click', nextPlayer);
+        
+        // Permitir o uso da tecla de espaço para reiniciar o timer
+        document.addEventListener('keydown', (event) => {
+            if (event.code === 'Space' && timerScreen.style.display === 'block' && gameOverScreen.style.display !== 'flex') {
+                resetTimer();
+            }
+        });
+    </script>
+</body>
+</html> 
